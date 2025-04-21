@@ -3,7 +3,7 @@
     <nav class="navbar">
       <div class="container">
         <router-link to="/" class="logo">
-          日本語学習-trytest1! <span class="logo-subtitle">Japanese Learning</span>
+          日本語学習-kanacard! <span class="logo-subtitle">Japanese Learning</span>
         </router-link>
         
         <div class="nav-links">

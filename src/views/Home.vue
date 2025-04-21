@@ -11,6 +11,9 @@
         <router-link to="/quiz" class="btn btn-secondary">
           Take a Quiz
         </router-link>
+        <router-link to="/kana" class="btn btn-accent">
+          Learn Kana
+        </router-link>
       </div>
     </div>
     
@@ -18,16 +21,19 @@
       <div class="feature-card">
         <h3>Vocabulary Management</h3>
         <p>Create and organize your Japanese vocabulary with kanji, kana, meanings, and example sentences.</p>
+        <router-link to="/vocabulary" class="feature-link">Get Started →</router-link>
       </div>
       
       <div class="feature-card">
         <h3>Quiz Mode</h3>
         <p>Test your knowledge with customizable quizzes to reinforce your learning.</p>
+        <router-link to="/quiz" class="feature-link">Try a Quiz →</router-link>
       </div>
       
       <div class="feature-card">
-        <h3>Progress Tracking</h3>
-        <p>Track your learning progress and focus on words that need more practice.</p>
+        <h3>五十音図 (Gojūon)</h3>
+        <p>Study hiragana and katakana with interactive cards to master the Japanese writing system.</p>
+        <router-link to="/kana" class="feature-link">Practice Kana →</router-link>
       </div>
     </div>
   </div>
@@ -70,6 +76,7 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .btn {
@@ -105,6 +112,15 @@ h1 {
   background-color: #0b7dda;
 }
 
+.btn-accent {
+  background-color: #FF5722;
+  color: white;
+}
+
+.btn-accent:hover {
+  background-color: #E64A19;
+}
+
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -118,6 +134,8 @@ h1 {
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
 }
 
 .feature-card:hover {
@@ -134,5 +152,20 @@ h1 {
 .feature-card p {
   color: #666;
   line-height: 1.6;
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.feature-link {
+  display: inline-block;
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.feature-link:hover {
+  color: #45a049;
+  text-decoration: underline;
 }
 </style> 
