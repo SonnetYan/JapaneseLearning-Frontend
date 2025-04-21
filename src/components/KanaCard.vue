@@ -19,24 +19,26 @@
         :class="{ active: showRomajiFirst }"
         class="direction-toggle"
       >
-        {{ showRomajiFirst ? '罗马音 → 假名' : '假名 → 罗马音' }}
+        <span class="switch-icon">⇄</span> {{ showRomajiFirst ? '罗马音 → 假名' : '假名 → 罗马音' }}
       </button>
     </div>
   </div>
 
   <div class="row-selector">
+
     <div class="row-filter">
+        <button @click="selectAllRows" :class="{ active: selectedRows.length === 0 }">
+        ALL
+      </button>
       <button 
         v-for="row in rows" 
         :key="row.id" 
         @click="selectSingleRow(row.id)"
         :class="{ active: selectedRows.includes(row.id) }"
       >
-        {{ row.name }}
+        {{ showRomajiFirst ? row.romajiName : row.name }}
       </button>
-      <button @click="selectAllRows" :class="{ active: selectedRows.length === 0 }">
-        全部
-      </button>
+
     </div>
   </div>
 
@@ -55,7 +57,7 @@
       <tbody>
         <!-- あ行 (a) -->
         <tr v-show="shouldShowRow('a')">
-          <th>あ</th>
+          <th>{{ showRomajiFirst ? 'A' : 'あ' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -78,7 +80,7 @@
         
         <!-- か行 (k) -->
         <tr v-show="shouldShowRow('k')">
-          <th>か</th>
+          <th>{{ showRomajiFirst ? 'K' : 'か' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -101,7 +103,7 @@
         
         <!-- さ行 (s) -->
         <tr v-show="shouldShowRow('s')">
-          <th>さ</th>
+          <th>{{ showRomajiFirst ? 'S' : 'さ' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -124,7 +126,7 @@
         
         <!-- た行 (t) -->
         <tr v-show="shouldShowRow('t')">
-          <th>た</th>
+          <th>{{ showRomajiFirst ? 'T' : 'た' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -147,7 +149,7 @@
         
         <!-- な行 (n) -->
         <tr v-show="shouldShowRow('n')">
-          <th>な</th>
+          <th>{{ showRomajiFirst ? 'N' : 'な' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -170,7 +172,7 @@
         
         <!-- は行 (h) -->
         <tr v-show="shouldShowRow('h')">
-          <th>は</th>
+          <th>{{ showRomajiFirst ? 'H' : 'は' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -193,7 +195,7 @@
         
         <!-- ま行 (m) -->
         <tr v-show="shouldShowRow('m')">
-          <th>ま</th>
+          <th>{{ showRomajiFirst ? 'M' : 'ま' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -216,7 +218,7 @@
         
         <!-- や行 (y) -->
         <tr v-show="shouldShowRow('y')">
-          <th>や</th>
+          <th>{{ showRomajiFirst ? 'Y' : 'や' }}</th>
           <td>
             <div 
               class="kana-cell" 
@@ -277,7 +279,7 @@
         
         <!-- ら行 (r) -->
         <tr v-show="shouldShowRow('r')">
-          <th>ら</th>
+          <th>{{ showRomajiFirst ? 'R' : 'ら' }}</th>
           <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
             <div 
               class="kana-cell" 
@@ -300,7 +302,7 @@
         
         <!-- わ行 (w) -->
         <tr v-show="shouldShowRow('w')">
-          <th>わ</th>
+          <th>{{ showRomajiFirst ? 'W' : 'わ' }}</th>
           <td>
             <div 
               class="kana-cell" 
@@ -344,7 +346,7 @@
         
         <!-- ん (n-special) -->
         <tr v-show="shouldShowRow('x')">
-          <th></th>
+          <th>{{ showRomajiFirst ? 'N' : 'ん' }}</th>
           <td></td>
           <td></td>
           <td>
@@ -385,17 +387,17 @@ export default {
       flippedCards: reactive({}),
       selectedRows: [],
       rows: [
-        { id: 'a', name: 'あ行' },
-        { id: 'k', name: 'か行' },
-        { id: 's', name: 'さ行' },
-        { id: 't', name: 'た行' },
-        { id: 'n', name: 'な行' },
-        { id: 'h', name: 'は行' },
-        { id: 'm', name: 'ま行' },
-        { id: 'y', name: 'や行' },
-        { id: 'r', name: 'ら行' },
-        { id: 'w', name: 'わ行' },
-        { id: 'x', name: 'ん' }
+        { id: 'a', name: 'あ行', romajiName: 'A' },
+        { id: 'k', name: 'か行', romajiName: 'K' },
+        { id: 's', name: 'さ行', romajiName: 'S' },
+        { id: 't', name: 'た行', romajiName: 'T' },
+        { id: 'n', name: 'な行', romajiName: 'N' },
+        { id: 'h', name: 'は行', romajiName: 'H' },
+        { id: 'm', name: 'ま行', romajiName: 'M' },
+        { id: 'y', name: 'や行', romajiName: 'Y' },
+        { id: 'r', name: 'ら行', romajiName: 'R' },
+        { id: 'w', name: 'わ行', romajiName: 'W' },
+        { id: 'x', name: 'ん', romajiName: 'N special' }
       ],
       hiragana: [
         // あ行
@@ -727,5 +729,11 @@ button.active {
   border-radius: 8px;
   margin: 20px auto;
   max-width: 800px;
+}
+
+.switch-icon {
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 16px;
 }
 </style> 
