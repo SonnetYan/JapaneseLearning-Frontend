@@ -55,7 +55,6 @@ export default {
 .hero {
   text-align: center;
   padding: 50px 20px;
-  background-color: #f9f9f9;
   border-radius: 8px;
   margin-bottom: 40px;
 }
@@ -63,12 +62,12 @@ export default {
 h1 {
   font-size: 3rem;
   margin-bottom: 10px;
-  color: #333;
+  color: var(--text-dark);
 }
 
 .subtitle {
   font-size: 1.5rem;
-  color: #666;
+  color: var(--text-dark);
   margin-bottom: 30px;
 }
 
@@ -82,43 +81,48 @@ h1 {
 .btn {
   display: inline-block;
   padding: 12px 30px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 1.1rem;
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: all 0.3s;
+  box-shadow: 0 4px 8px var(--shadow);
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px var(--shadow);
 }
 
 .btn-primary {
-  background-color: #4CAF50;
-  color: white;
+  background-color: var(--hinata-orange);
+  color: var(--text-light);
 }
 
 .btn-primary:hover {
-  background-color: #45a049;
+  background-color: var(--hinata-orange);
+  opacity: 0.9;
 }
 
 .btn-secondary {
-  background-color: #2196F3;
-  color: white;
+  background-color: var(--kageyama-blue);
+  color: var(--text-light);
 }
 
 .btn-secondary:hover {
-  background-color: #0b7dda;
+  background-color: var(--kageyama-blue);
+  opacity: 0.9;
 }
 
 .btn-accent {
-  background-color: #FF5722;
-  color: white;
+  background-color: var(--tsukishima-yellow);
+  color: var(--text-dark);
 }
 
 .btn-accent:hover {
-  background-color: #E64A19;
+  background-color: var(--tsukishima-yellow);
+  opacity: 0.9;
 }
 
 .features {
@@ -129,10 +133,10 @@ h1 {
 }
 
 .feature-card {
-  background-color: white;
+  background-color: var(--text-light);
   border-radius: 8px;
   padding: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px var(--shadow);
   transition: transform 0.3s, box-shadow 0.3s;
   display: flex;
   flex-direction: column;
@@ -140,17 +144,17 @@ h1 {
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px var(--shadow);
 }
 
 .feature-card h3 {
   font-size: 1.5rem;
   margin-bottom: 15px;
-  color: #333;
+  color: var(--kageyama-blue);
 }
 
 .feature-card p {
-  color: #666;
+  color: var(--text-dark);
   line-height: 1.6;
   margin-bottom: 20px;
   flex-grow: 1;
@@ -158,14 +162,15 @@ h1 {
 
 .feature-link {
   display: inline-block;
-  color: #4CAF50;
+  color: var(--hinata-orange);
   text-decoration: none;
   font-weight: bold;
   transition: color 0.3s;
 }
 
 .feature-link:hover {
-  color: #45a049;
+  color: var(--hinata-orange);
+  opacity: 0.8;
   text-decoration: underline;
 }
 </style> 
