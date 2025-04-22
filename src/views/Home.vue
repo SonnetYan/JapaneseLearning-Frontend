@@ -36,12 +36,29 @@
         <router-link to="/kana" class="feature-link">Practice Kana →</router-link>
       </div>
     </div>
+    
+    <!-- 简单的背景水印层 - 根据showWatermark状态显示或隐藏 -->
+    <div class="watermark-overlay" v-if="showWatermark"></div>
   </div>
 </template>
 
 <script>
+import WatermarkImage from '@/assets/watermark.png'; // 导入图片
+
 export default {
-  name: 'HomeView'
+  name: 'HomeView',
+  data() {
+    return {
+      watermarkUrl: WatermarkImage,
+      showWatermark: true // 默认显示水印
+    }
+  },
+  methods: {
+    // 切换水印显示/隐藏
+    toggleWatermark() {
+      this.showWatermark = !this.showWatermark;
+    }
+  }
 }
 </script>
 
@@ -50,6 +67,23 @@ export default {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  position: relative; /* 为绝对定位的水印提供参考 */
+}
+
+/* 水印覆盖层 */
+.watermark-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('~@/assets/watermark.png'); /* 使用~@语法 */
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: 80% auto;
+  opacity: 0.2;
+  z-index: -1; /* 放在内容下方 */
+  pointer-events: none; /* 不阻止点击 */
 }
 
 .hero {
@@ -57,6 +91,8 @@ export default {
   padding: 50px 20px;
   border-radius: 8px;
   margin-bottom: 40px;
+  position: relative; /* 确保内容在水印之上 */
+  z-index: 2;
 }
 
 h1 {
@@ -172,5 +208,11 @@ h1 {
   color: var(--hinata-orange);
   opacity: 0.8;
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .watermark {
+    width: 30vw; /* slightly larger on small screens */
+  }
 }
 </style> 

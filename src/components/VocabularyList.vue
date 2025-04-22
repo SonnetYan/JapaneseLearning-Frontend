@@ -22,14 +22,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="word in filteredVocabulary" :key="word._id">
+          <tr v-for="word in filteredVocabulary" 
+              :key="word._id" 
+              @click="handleRowClick($event, word._id)"
+              class="vocabulary-row">
             <td>{{ word.kanji || '–' }}</td>
             <td>{{ word.kana }}</td>
             <td>{{ word.meaning }}</td>
-            <td>
-              <button @click="viewDetails(word._id)">View</button>
-              <button @click="editWord(word._id)">Edit</button>
-              <button @click="deleteWord(word._id)">Delete</button>
+            <td class="actions-cell">
+              <button @click.stop="viewDetails(word._id)">View</button>
+              <button @click.stop="editWord(word._id)">Edit</button>
+              <button @click.stop="deleteWord(word._id)">Delete</button>
             </td>
           </tr>
           <tr v-if="filteredVocabulary.length === 0">
@@ -101,6 +104,12 @@ export default {
           console.error('Error deleting word:', error);
         }
       }
+    },
+    handleRowClick(event, id) {
+      // If the click is not from a button (handled by other methods)
+      if (!event.target.closest('button')) {
+        this.viewDetails(id);
+      }
     }
   }
 };
@@ -136,10 +145,13 @@ table {
 }
 
 thead th {
-  background-color: #f2f2f2;
-  padding: 10px;
+  background-color: var(--kageyama-blue, #1A3263);
+  color: var(--text-light, #FFFFFF);
+  padding: 12px;
   text-align: left;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--hinata-orange, #F5A623);
+  font-size: 16px;
+  font-weight: bold;
 }
 
 tbody td {
@@ -149,31 +161,56 @@ tbody td {
 
 button {
   margin-right: 5px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border: none;
   border-radius: 4px;
-  background-color: #4CAF50;
-  color: white;
   cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px var(--shadow, rgba(0, 0, 0, 0.1));
 }
 
 button:hover {
-  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--shadow, rgba(0, 0, 0, 0.1));
+}
+
+button:nth-child(1) {
+  background-color: var(--hinata-orange, #F5A623);
+  color: var(--text-light, #FFFFFF);
+}
+
+button:nth-child(1):hover {
+  opacity: 0.9;
 }
 
 button:nth-child(2) {
-  background-color: #2196F3;
+  background-color:rgb(58, 104, 195); 
+  color: var(--text-light, #FFFFFF);
 }
 
 button:nth-child(2):hover {
-  background-color: #0b7dda;
+  opacity: 0.9;
 }
 
 button:nth-child(3) {
-  background-color: #f44336;
+  background-color:rgb(249, 79, 67);
+  color: var(--text-light, #FFFFFF);
 }
 
 button:nth-child(3):hover {
-  background-color: #d32f2f;
+  opacity: 0.9;
+}
+
+.vocabulary-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.vocabulary-row:hover {
+  background-color: rgba(26, 50, 99, 0.1);
+}
+
+.actions-cell {
+  white-space: nowrap;
 }
 </style> 
