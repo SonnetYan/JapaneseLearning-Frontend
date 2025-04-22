@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <div class="hero">
-      <h1>Japanese Learning App</h1>
+      <h1>Japanese Learning App-- kana audio</h1>
       <p class="subtitle">Build your Japanese vocabulary and track your progress</p>
       
       <div class="action-buttons">

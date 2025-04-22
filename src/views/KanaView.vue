@@ -21,6 +21,13 @@
       >
         <span class="switch-icon">⇄</span> {{ showRomajiFirst ? '罗马音 → 假名' : '假名 → 罗马音' }}
       </button>
+      <button
+        @click="toggleAudio()"
+        :class="{ active: audioEnabled }"
+        class="audio-toggle"
+      >
+        <span class="audio-icon">{{ audioEnabled ? '🔊' : '🔇' }}</span> {{ audioEnabled ? '发音开启' : '发音关闭' }}
+      </button>
     </div>
   </div>
 
@@ -386,6 +393,8 @@ export default {
       showRomajiFirst: false,
       flippedCards: reactive({}),
       selectedRows: [],
+      audioEnabled: true,
+      audio: null,
       rows: [
         { id: 'a', name: 'あ行', romajiName: 'A' },
         { id: 'k', name: 'か行', romajiName: 'K' },
@@ -544,12 +553,14 @@ export default {
     flipCard(character) {
       if (!character) return;
       
+      this.playKanaAudio(this.getKanaRomaji(character));
+      
       this.flippedCards[character] = !this.flippedCards[character];
       
       // 自动翻回卡片
       setTimeout(() => {
         this.flippedCards[character] = false;
-      }, 3000);
+      }, 800);
     },
     setKanaType(type) {
       this.kanaType = type;
@@ -583,6 +594,57 @@ export default {
       Object.keys(this.flippedCards).forEach(key => {
         delete this.flippedCards[key];
       });
+    },
+    toggleAudio() {
+      this.audioEnabled = !this.audioEnabled;
+      // 如果关闭音频，停止当前播放的音频
+      if (!this.audioEnabled && this.audio) {
+        this.audio.pause();
+        this.audio = null;
+      }
+    },
+    getKanaRomaji(character) {
+      const kanaSet = this.kanaType === 'hiragana' ? this.hiragana : this.katakana;
+      const kana = kanaSet.find(k => k.character === character);
+      return kana ? kana.romaji : '';
+    },
+    playKanaAudio(romaji) {
+      // 如果音频功能关闭或没有罗马音，不播放
+      if (!this.audioEnabled || !romaji) return;
+      
+      // 停止当前播放的音频
+      if (this.audio) {
+        this.audio.pause();
+        this.audio = null;
+      }
+      
+      // 处理特殊发音情况
+      let audioFileName = romaji;
+      // 特殊处理某些罗马音与音频文件的对应关系
+      switch(romaji) {
+        case 'shi': audioFileName = 'shi'; break;
+        case 'chi': audioFileName = 'chi'; break;
+        case 'tsu': audioFileName = 'tsu'; break;
+        // 其他特殊情况...
+      }
+      
+      try {
+        // 创建音频对象并播放
+        this.audio = new Audio(`/audio/kana/${audioFileName}.mp3`);
+        
+        // 添加错误处理
+        this.audio.onerror = (e) => {
+          console.error('音频播放错误:', e);
+          console.error('尝试播放:', `/audio/kana/${audioFileName}.mp3`);
+        };
+        
+        // 播放音频
+        this.audio.play().catch(e => {
+          console.error('无法播放音频:', e);
+        });
+      } catch (e) {
+        console.error('音频创建错误:', e);
+      }
     }
   }
 };
@@ -734,6 +796,26 @@ button.active {
 .switch-icon {
   margin-right: 5px;
   font-weight: bold;
+  font-size: 16px;
+}
+
+.audio-toggle {
+  margin-left: 10px;
+  background-color: var(--kageyama-blue, #1A3263);
+  color: white;
+}
+
+.audio-toggle:hover {
+  background-color: var(--hinata-orange, #F5A623);
+}
+
+.audio-toggle.active {
+  background-color: var(--hinata-orange, #F5A623);
+  color: white;
+}
+
+.audio-icon {
+  margin-right: 5px;
   font-size: 16px;
 }
 </style> 
