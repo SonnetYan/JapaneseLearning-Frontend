@@ -8,10 +8,13 @@
         <router-link to="/vocabulary" class="btn btn-primary">
           View Vocabulary
         </router-link>
+        <router-link to="/flashcards" class="btn btn-accent">
+          Flashcard Review
+        </router-link>
         <router-link to="/quiz" class="btn btn-secondary">
           Take a Quiz
         </router-link>
-        <router-link to="/kana" class="btn btn-accent">
+        <router-link to="/kana" class="btn btn-kana">
           Learn Kana
         </router-link>
       </div>
@@ -22,6 +25,12 @@
         <h3>Vocabulary Management</h3>
         <p>Create and organize your Japanese vocabulary with kanji, kana, meanings, and example sentences.</p>
         <router-link to="/vocabulary" class="feature-link">Get Started →</router-link>
+      </div>
+      
+      <div class="feature-card">
+        <h3>Flashcard Review</h3>
+        <p>Strengthen your memory with customizable flashcards using a spaced repetition system.</p>
+        <router-link to="/flashcards" class="feature-link">Start Review →</router-link>
       </div>
       
       <div class="feature-card">
@@ -50,7 +59,7 @@ export default {
   data() {
     return {
       watermarkUrl: WatermarkImage,
-      showWatermark: true // 默认显示水印
+      showWatermark: false // 默认显示水印
     }
   },
   methods: {
@@ -128,6 +137,7 @@ h1 {
 
 .btn:hover {
   transform: translateY(-3px);
+
   box-shadow: 0 6px 12px var(--shadow);
 }
 
@@ -158,6 +168,16 @@ h1 {
 
 .btn-accent:hover {
   background-color: var(--tsukishima-yellow);
+  opacity: 0.9;
+}
+
+.btn-kana {
+  background-color:rgb(134, 98, 140); /* 紫色 */
+  color: var(--text-light);
+}
+
+.btn-kana:hover {
+  background-color:rgb(149, 107, 166);
   opacity: 0.9;
 }
 

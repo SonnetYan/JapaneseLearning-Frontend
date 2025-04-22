@@ -27,6 +27,11 @@ const routes = [
     component: () => import('../views/VocabularyDetailView.vue')
   },
   {
+    path: '/flashcards',
+    name: 'Flashcards',
+    component: () => import('../views/FlashcardView.vue')
+  },
+  {
     path: '/quiz',
     name: 'Quiz',
     component: () => import('../views/QuizView.vue')

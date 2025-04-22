@@ -6,6 +6,9 @@
       <router-link to="/vocabulary/add" class="add-btn">
         Add New Word
       </router-link>
+      <router-link to="/flashcards" class="flashcard-btn">
+        Flashcard Review
+      </router-link>
     </div>
     
     <VocabularyList />
@@ -36,19 +39,32 @@ h1 {
 
 .actions {
   margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
 }
 
-.add-btn {
+.add-btn, .flashcard-btn {
   display: inline-block;
-  background-color: #4CAF50;
-  color: white;
   padding: 10px 20px;
   border-radius: 4px;
   text-decoration: none;
   font-weight: bold;
+  color: white;
+}
+
+.add-btn {
+  background-color: #4CAF50;
 }
 
 .add-btn:hover {
   background-color: #45a049;
+}
+
+.flashcard-btn {
+  background-color: var(--hinata-orange, #F5A623);
+}
+
+.flashcard-btn:hover {
+  opacity: 0.9;
 }
 </style> 

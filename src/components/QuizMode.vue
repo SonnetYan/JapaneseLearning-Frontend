@@ -75,7 +75,7 @@
         Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}
       </div>
       
-      <div class="question">
+      <div class="question" v-if="!showingFeedback">
         <h3>{{ questionPrompt }}</h3>
         
         <div v-if="quizType === 'meaning-to-japanese'" class="question-content">
@@ -105,6 +105,40 @@
         
         <button @click="submitAnswer" class="submit-btn">Submit</button>
       </div>
+      
+      <div class="feedback" v-else>
+        <div :class="['feedback-card', currentFeedback.isCorrect ? 'correct' : 'incorrect']">
+          <div class="feedback-header">
+            <h3 v-if="currentFeedback.isCorrect">✓ Correct!</h3>
+            <h3 v-else>✗ Incorrect</h3>
+          </div>
+          
+          <div class="feedback-content">
+            <div class="word-details">
+              <p class="word">
+                <span v-if="currentQuestion.kanji">{{ currentQuestion.kanji }} ({{ currentQuestion.kana }})</span>
+                <span v-else>{{ currentQuestion.kana }}</span>
+              </p>
+              <p class="meaning">{{ currentQuestion.meaning }}</p>
+            </div>
+            
+            <div class="user-answer" v-if="!currentFeedback.isCorrect">
+              <p>Your answer: <span class="incorrect-text">{{ currentFeedback.userAnswer }}</span></p>
+              <p>Correct answer: <span class="correct-text">{{ quizType === 'meaning-to-japanese' ? currentQuestion.kana : currentQuestion.meaning }}</span></p>
+            </div>
+            
+            <div class="example" v-if="currentQuestion.examples && currentQuestion.examples.length">
+              <p class="example-label">Example:</p>
+              <p class="japanese-text">{{ currentQuestion.examples[0].japanese }}</p>
+              <p class="english-text">{{ currentQuestion.examples[0].english }}</p>
+            </div>
+          </div>
+          
+          <button @click="nextQuestion" class="next-btn">
+            {{ currentQuestionIndex < totalQuestions - 1 ? 'Next Question' : 'View Results' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -128,7 +162,9 @@ export default {
       userAnswer: '',
       quizResults: [],
       correctAnswers: 0,
-      userId: '1' // Hardcoded for now, should come from authentication
+      userId: '1', // Hardcoded for now, should come from authentication
+      showingFeedback: false,
+      currentFeedback: null
     };
   },
   computed: {
@@ -179,6 +215,8 @@ export default {
       this.quizResults = [];
       this.correctAnswers = 0;
       this.userAnswer = '';
+      this.showingFeedback = false;
+      this.currentFeedback = null;
       
       // Focus on the answer input
       this.$nextTick(() => {
@@ -188,7 +226,7 @@ export default {
       });
     },
     async submitAnswer() {
-      if (!this.userAnswer.trim()) return;
+      if (!this.userAnswer.trim() || this.showingFeedback) return;
       
       const currentWord = this.currentQuestion;
       let isCorrect = false;
@@ -207,11 +245,15 @@ export default {
       }
       
       // Store result
-      this.quizResults.push({
+      const resultItem = {
         word: currentWord,
         userAnswer: this.userAnswer,
         isCorrect
-      });
+      };
+      
+      this.quizResults.push(resultItem);
+      this.currentFeedback = resultItem;
+      this.showingFeedback = true;
       
       if (isCorrect) {
         this.correctAnswers++;
@@ -219,6 +261,10 @@ export default {
       
       // Update user progress in the background
       this.updateProgress(currentWord._id, isCorrect);
+    },
+    nextQuestion() {
+      this.showingFeedback = false;
+      this.currentFeedback = null;
       
       // Move to next question or complete quiz
       if (this.currentQuestionIndex < this.totalQuestions - 1) {
@@ -250,6 +296,8 @@ export default {
       this.quizStarted = false;
       this.quizComplete = false;
       this.quizResults = [];
+      this.showingFeedback = false;
+      this.currentFeedback = null;
     },
     goToVocabulary() {
       this.$router.push('/vocabulary');
@@ -379,6 +427,137 @@ input {
   background-color: #0b7dda;
 }
 
+/* Feedback Styles */
+.feedback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.feedback-card {
+  width: 100%;
+  max-width: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feedback-card.correct {
+  border: 2px solid #4CAF50;
+}
+
+.feedback-card.incorrect {
+  border: 2px solid #f44336;
+}
+
+.feedback-header {
+  padding: 15px;
+  color: white;
+}
+
+.feedback-card.correct .feedback-header {
+  background-color: #4CAF50;
+}
+
+.feedback-card.incorrect .feedback-header {
+  background-color: #f44336;
+}
+
+.feedback-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.feedback-content {
+  padding: 20px;
+  background-color: white;
+}
+
+.word-details {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.word {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.meaning {
+  font-size: 18px;
+  color: #555;
+}
+
+.user-answer {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+}
+
+.incorrect-text {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.correct-text {
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.example {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.example-label {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.japanese-text {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.english-text {
+  color: #666;
+}
+
+.next-btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border: none;
+  background-color: var(--kageyama-blue, #1A3263);
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.next-btn:hover {
+  background-color: #142851;
+}
+
 .quiz-results {
   text-align: center;
 }
@@ -419,11 +598,6 @@ input {
 
 .result-card.incorrect {
   border-left: 5px solid #f44336;
-}
-
-.word {
-  font-weight: bold;
-  margin-bottom: 5px;
 }
 
 .answer-status {
