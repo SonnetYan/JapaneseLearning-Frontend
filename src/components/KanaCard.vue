@@ -1,1 +1,767 @@
- 
+<!-- 平假名和片假名学习卡片 -->
+<template>
+  <div class="kana-learning-container card">
+    <div class="kana-controls">
+      <div class="kana-filter">
+        <button 
+          @click="setKanaType('hiragana')" 
+          :class="{ active: kanaType === 'hiragana' }"
+          class="kana-type-btn"
+        >
+          平假名
+        </button>
+        <button 
+          @click="setKanaType('katakana')" 
+          :class="{ active: kanaType === 'katakana' }"
+          class="kana-type-btn"
+        >
+          片假名
+        </button>
+        <button
+          @click="toggleDirection()"
+          :class="{ active: showRomajiFirst }"
+          class="direction-toggle"
+        >
+          <span class="switch-icon">⇄</span> {{ showRomajiFirst ? 'aa罗马音 → 假名' : '假名 → 罗马音' }}
+        </button>
+      </div>
+    </div>
+
+    <div class="row-selector">
+      <div class="row-filter">
+        <button @click="selectAllRows" :class="{ active: selectedRows.length === 0 }" class="all-btn">
+          ALL
+        </button>
+        <button 
+          v-for="row in rows" 
+          :key="row.id" 
+          @click="selectSingleRow(row.id)"
+          :class="{ active: selectedRows.includes(row.id) }"
+        >
+          {{ showRomajiFirst ? row.romajiName : row.name }}
+        </button>
+      </div>
+    </div>
+
+    <div class="kana-table-container">
+      <table class="kana-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>a</th>
+            <th>i</th>
+            <th>u</th>
+            <th>e</th>
+            <th>o</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- あ行 (a) -->
+          <tr v-show="shouldShowRow('a')">
+            <th>{{ showRomajiFirst ? 'A' : 'あ' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('a', sound).character] }"
+                @click="flipCard(getKana('a', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('a', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('a', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('a', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('a', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- か行 (k) -->
+          <tr v-show="shouldShowRow('k')">
+            <th>{{ showRomajiFirst ? 'K' : 'か' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('k', sound).character] }"
+                @click="flipCard(getKana('k', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('k', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('k', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('k', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('k', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- さ行 (s) -->
+          <tr v-show="shouldShowRow('s')">
+            <th>{{ showRomajiFirst ? 'S' : 'さ' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('s', sound).character] }"
+                @click="flipCard(getKana('s', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('s', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('s', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('s', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('s', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- た行 (t) -->
+          <tr v-show="shouldShowRow('t')">
+            <th>{{ showRomajiFirst ? 'T' : 'た' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('t', sound).character] }"
+                @click="flipCard(getKana('t', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('t', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('t', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('t', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('t', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- な行 (n) -->
+          <tr v-show="shouldShowRow('n')">
+            <th>{{ showRomajiFirst ? 'N' : 'な' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('n', sound).character] }"
+                @click="flipCard(getKana('n', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('n', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('n', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('n', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('n', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- は行 (h) -->
+          <tr v-show="shouldShowRow('h')">
+            <th>{{ showRomajiFirst ? 'H' : 'は' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('h', sound).character] }"
+                @click="flipCard(getKana('h', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('h', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('h', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('h', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('h', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- ま行 (m) -->
+          <tr v-show="shouldShowRow('m')">
+            <th>{{ showRomajiFirst ? 'M' : 'ま' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('m', sound).character] }"
+                @click="flipCard(getKana('m', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('m', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('m', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('m', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('m', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- や行 (y) -->
+          <tr v-show="shouldShowRow('y')">
+            <th>{{ showRomajiFirst ? 'Y' : 'や' }}</th>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('y', 'a').character] }"
+                @click="flipCard(getKana('y', 'a').character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('y', 'a').character }}</div>
+                    <div class="romaji" v-else>{{ getKana('y', 'a').romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('y', 'a').romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('y', 'a').character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('y', 'u').character] }"
+                @click="flipCard(getKana('y', 'u').character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('y', 'u').character }}</div>
+                    <div class="romaji" v-else>{{ getKana('y', 'u').romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('y', 'u').romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('y', 'u').character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td></td>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('y', 'o').character] }"
+                @click="flipCard(getKana('y', 'o').character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('y', 'o').character }}</div>
+                    <div class="romaji" v-else>{{ getKana('y', 'o').romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('y', 'o').romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('y', 'o').character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- ら行 (r) -->
+          <tr v-show="shouldShowRow('r')">
+            <th>{{ showRomajiFirst ? 'R' : 'ら' }}</th>
+            <td v-for="sound in ['a', 'i', 'u', 'e', 'o']" :key="sound">
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('r', sound).character] }"
+                @click="flipCard(getKana('r', sound).character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('r', sound).character }}</div>
+                    <div class="romaji" v-else>{{ getKana('r', sound).romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('r', sound).romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('r', sound).character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- わ行 (w) -->
+          <tr v-show="shouldShowRow('w')">
+            <th>{{ showRomajiFirst ? 'W' : 'わ' }}</th>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('w', 'a').character] }"
+                @click="flipCard(getKana('w', 'a').character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('w', 'a').character }}</div>
+                    <div class="romaji" v-else>{{ getKana('w', 'a').romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('w', 'a').romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('w', 'a').character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getKana('w', 'o').character] }"
+                @click="flipCard(getKana('w', 'o').character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getKana('w', 'o').character }}</div>
+                    <div class="romaji" v-else>{{ getKana('w', 'o').romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getKana('w', 'o').romaji }}</div>
+                    <div class="kana-character" v-else>{{ getKana('w', 'o').character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+          
+          <!-- ん (n-special) -->
+          <tr v-show="shouldShowRow('x')">
+            <th>{{ showRomajiFirst ? 'N' : 'ん' }}</th>
+            <td></td>
+            <td></td>
+            <td>
+              <div 
+                class="kana-cell" 
+                :class="{ flipped: flippedCards[getNSpecial().character] }"
+                @click="flipCard(getNSpecial().character)"
+              >
+                <div class="card-inner">
+                  <div class="card-front">
+                    <div class="kana-character" v-if="!showRomajiFirst">{{ getNSpecial().character }}</div>
+                    <div class="romaji" v-else>{{ getNSpecial().romaji }}</div>
+                  </div>
+                  <div class="card-back">
+                    <div class="romaji" v-if="!showRomajiFirst">{{ getNSpecial().romaji }}</div>
+                    <div class="kana-character" v-else>{{ getNSpecial().character }}</div>
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</template>
+
+<script>
+import { reactive } from 'vue';
+
+export default {
+  name: 'KanaCard',
+  data() {
+    return {
+      kanaType: 'hiragana',
+      showRomajiFirst: false,
+      flippedCards: reactive({}),
+      selectedRows: [],
+      rows: [
+        { id: 'a', name: 'あ行', romajiName: 'A' },
+        { id: 'k', name: 'か行', romajiName: 'K' },
+        { id: 's', name: 'さ行', romajiName: 'S' },
+        { id: 't', name: 'た行', romajiName: 'T' },
+        { id: 'n', name: 'な行', romajiName: 'N' },
+        { id: 'h', name: 'は行', romajiName: 'H' },
+        { id: 'm', name: 'ま行', romajiName: 'M' },
+        { id: 'y', name: 'や行', romajiName: 'Y' },
+        { id: 'r', name: 'ら行', romajiName: 'R' },
+        { id: 'w', name: 'わ行', romajiName: 'W' },
+        { id: 'x', name: 'ん', romajiName: 'N special' }
+      ],
+      hiragana: [
+        // あ行
+        { character: 'あ', romaji: 'a', row: 'a', column: 'a' },
+        { character: 'い', romaji: 'i', row: 'a', column: 'i' },
+        { character: 'う', romaji: 'u', row: 'a', column: 'u' },
+        { character: 'え', romaji: 'e', row: 'a', column: 'e' },
+        { character: 'お', romaji: 'o', row: 'a', column: 'o' },
+        // か行
+        { character: 'か', romaji: 'ka', row: 'k', column: 'a' },
+        { character: 'き', romaji: 'ki', row: 'k', column: 'i' },
+        { character: 'く', romaji: 'ku', row: 'k', column: 'u' },
+        { character: 'け', romaji: 'ke', row: 'k', column: 'e' },
+        { character: 'こ', romaji: 'ko', row: 'k', column: 'o' },
+        // さ行
+        { character: 'さ', romaji: 'sa', row: 's', column: 'a' },
+        { character: 'し', romaji: 'shi', row: 's', column: 'i' },
+        { character: 'す', romaji: 'su', row: 's', column: 'u' },
+        { character: 'せ', romaji: 'se', row: 's', column: 'e' },
+        { character: 'そ', romaji: 'so', row: 's', column: 'o' },
+        // た行
+        { character: 'た', romaji: 'ta', row: 't', column: 'a' },
+        { character: 'ち', romaji: 'chi', row: 't', column: 'i' },
+        { character: 'つ', romaji: 'tsu', row: 't', column: 'u' },
+        { character: 'て', romaji: 'te', row: 't', column: 'e' },
+        { character: 'と', romaji: 'to', row: 't', column: 'o' },
+        // な行
+        { character: 'な', romaji: 'na', row: 'n', column: 'a' },
+        { character: 'に', romaji: 'ni', row: 'n', column: 'i' },
+        { character: 'ぬ', romaji: 'nu', row: 'n', column: 'u' },
+        { character: 'ね', romaji: 'ne', row: 'n', column: 'e' },
+        { character: 'の', romaji: 'no', row: 'n', column: 'o' },
+        // は行
+        { character: 'は', romaji: 'ha', row: 'h', column: 'a' },
+        { character: 'ひ', romaji: 'hi', row: 'h', column: 'i' },
+        { character: 'ふ', romaji: 'fu', row: 'h', column: 'u' },
+        { character: 'へ', romaji: 'he', row: 'h', column: 'e' },
+        { character: 'ほ', romaji: 'ho', row: 'h', column: 'o' },
+        // ま行
+        { character: 'ま', romaji: 'ma', row: 'm', column: 'a' },
+        { character: 'み', romaji: 'mi', row: 'm', column: 'i' },
+        { character: 'む', romaji: 'mu', row: 'm', column: 'u' },
+        { character: 'め', romaji: 'me', row: 'm', column: 'e' },
+        { character: 'も', romaji: 'mo', row: 'm', column: 'o' },
+        // や行
+        { character: 'や', romaji: 'ya', row: 'y', column: 'a' },
+        { character: 'ゆ', romaji: 'yu', row: 'y', column: 'u' },
+        { character: 'よ', romaji: 'yo', row: 'y', column: 'o' },
+        // ら行
+        { character: 'ら', romaji: 'ra', row: 'r', column: 'a' },
+        { character: 'り', romaji: 'ri', row: 'r', column: 'i' },
+        { character: 'る', romaji: 'ru', row: 'r', column: 'u' },
+        { character: 'れ', romaji: 're', row: 'r', column: 'e' },
+        { character: 'ろ', romaji: 'ro', row: 'r', column: 'o' },
+        // わ行
+        { character: 'わ', romaji: 'wa', row: 'w', column: 'a' },
+        { character: 'を', romaji: 'wo', row: 'w', column: 'o' },
+        // ん
+        { character: 'ん', romaji: 'n', row: 'x', column: 'special' }
+      ],
+      katakana: [
+        // ア行
+        { character: 'ア', romaji: 'a', row: 'a', column: 'a' },
+        { character: 'イ', romaji: 'i', row: 'a', column: 'i' },
+        { character: 'ウ', romaji: 'u', row: 'a', column: 'u' },
+        { character: 'エ', romaji: 'e', row: 'a', column: 'e' },
+        { character: 'オ', romaji: 'o', row: 'a', column: 'o' },
+        // カ行
+        { character: 'カ', romaji: 'ka', row: 'k', column: 'a' },
+        { character: 'キ', romaji: 'ki', row: 'k', column: 'i' },
+        { character: 'ク', romaji: 'ku', row: 'k', column: 'u' },
+        { character: 'ケ', romaji: 'ke', row: 'k', column: 'e' },
+        { character: 'コ', romaji: 'ko', row: 'k', column: 'o' },
+        // サ行
+        { character: 'サ', romaji: 'sa', row: 's', column: 'a' },
+        { character: 'シ', romaji: 'shi', row: 's', column: 'i' },
+        { character: 'ス', romaji: 'su', row: 's', column: 'u' },
+        { character: 'セ', romaji: 'se', row: 's', column: 'e' },
+        { character: 'ソ', romaji: 'so', row: 's', column: 'o' },
+        // タ行
+        { character: 'タ', romaji: 'ta', row: 't', column: 'a' },
+        { character: 'チ', romaji: 'chi', row: 't', column: 'i' },
+        { character: 'ツ', romaji: 'tsu', row: 't', column: 'u' },
+        { character: 'テ', romaji: 'te', row: 't', column: 'e' },
+        { character: 'ト', romaji: 'to', row: 't', column: 'o' },
+        // ナ行
+        { character: 'ナ', romaji: 'na', row: 'n', column: 'a' },
+        { character: 'ニ', romaji: 'ni', row: 'n', column: 'i' },
+        { character: 'ヌ', romaji: 'nu', row: 'n', column: 'u' },
+        { character: 'ネ', romaji: 'ne', row: 'n', column: 'e' },
+        { character: 'ノ', romaji: 'no', row: 'n', column: 'o' },
+        // ハ行
+        { character: 'ハ', romaji: 'ha', row: 'h', column: 'a' },
+        { character: 'ヒ', romaji: 'hi', row: 'h', column: 'i' },
+        { character: 'フ', romaji: 'fu', row: 'h', column: 'u' },
+        { character: 'ヘ', romaji: 'he', row: 'h', column: 'e' },
+        { character: 'ホ', romaji: 'ho', row: 'h', column: 'o' },
+        // マ行
+        { character: 'マ', romaji: 'ma', row: 'm', column: 'a' },
+        { character: 'ミ', romaji: 'mi', row: 'm', column: 'i' },
+        { character: 'ム', romaji: 'mu', row: 'm', column: 'u' },
+        { character: 'メ', romaji: 'me', row: 'm', column: 'e' },
+        { character: 'モ', romaji: 'mo', row: 'm', column: 'o' },
+        // ヤ行
+        { character: 'ヤ', romaji: 'ya', row: 'y', column: 'a' },
+        { character: 'ユ', romaji: 'yu', row: 'y', column: 'u' },
+        { character: 'ヨ', romaji: 'yo', row: 'y', column: 'o' },
+        // ラ行
+        { character: 'ラ', romaji: 'ra', row: 'r', column: 'a' },
+        { character: 'リ', romaji: 'ri', row: 'r', column: 'i' },
+        { character: 'ル', romaji: 'ru', row: 'r', column: 'u' },
+        { character: 'レ', romaji: 're', row: 'r', column: 'e' },
+        { character: 'ロ', romaji: 'ro', row: 'r', column: 'o' },
+        // ワ行
+        { character: 'ワ', romaji: 'wa', row: 'w', column: 'a' },
+        { character: 'ヲ', romaji: 'wo', row: 'w', column: 'o' },
+        // ン
+        { character: 'ン', romaji: 'n', row: 'x', column: 'special' }
+      ]
+    };
+  },
+  computed: {
+    isAllSelected() {
+      return this.selectedRows.length === this.rows.length;
+    },
+    rowIds() {
+      return this.rows.map(row => row.id);
+    }
+  },
+  methods: {
+    shouldShowRow(rowId) {
+      // 如果没有选中任何行，则显示所有行
+      // 如果选中了某些行，则只显示被选中的行
+      return this.selectedRows.length === 0 || this.selectedRows.includes(rowId);
+    },
+    getKana(row, column) {
+      const kanaSet = this.kanaType === 'hiragana' ? this.hiragana : this.katakana;
+      return kanaSet.find(kana => kana.row === row && kana.column === column) || { character: '', romaji: '' };
+    },
+    getNSpecial() {
+      const kanaSet = this.kanaType === 'hiragana' ? this.hiragana : this.katakana;
+      return kanaSet.find(kana => kana.row === 'x') || { character: '', romaji: '' };
+    },
+    flipCard(character) {
+      if (!character) return;
+      
+      this.flippedCards[character] = !this.flippedCards[character];
+      
+      // 自动翻回卡片
+      setTimeout(() => {
+        this.flippedCards[character] = false;
+      }, 3000);
+    },
+    setKanaType(type) {
+      this.kanaType = type;
+      // 清空flippedCards对象
+      Object.keys(this.flippedCards).forEach(key => {
+        delete this.flippedCards[key];
+      });
+    },
+    toggleDirection() {
+      this.showRomajiFirst = !this.showRomajiFirst;
+      // 清空flippedCards对象
+      Object.keys(this.flippedCards).forEach(key => {
+        delete this.flippedCards[key];
+      });
+    },
+    selectSingleRow(rowId) {
+      if (this.selectedRows.includes(rowId)) {
+        // If the row is already selected, unselect all rows
+        this.selectedRows = [];
+      } else {
+        // Select only this row (clearing any previously selected rows)
+        this.selectedRows = [rowId];
+      }
+    },
+    selectAllRows() {
+      // If there are any rows selected, clear the selection
+      // This will show all rows
+      this.selectedRows = [];
+      
+      // 清空flippedCards对象
+      Object.keys(this.flippedCards).forEach(key => {
+        delete this.flippedCards[key];
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.kana-table-container {
+  max-width: 800px;
+  margin: 20px auto;
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+
+.kana-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--hinata-light);
+  border: 2px solid var(--hinata-orange);
+}
+
+.kana-table th, .kana-table td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid var(--hinata-orange);
+}
+
+.kana-table thead th {
+  background-color: var(--kageyama-blue);
+  font-weight: normal;
+  color: var(--text-light);
+  padding: 12px 8px;
+}
+
+.kana-table tbody th {
+  background-color: var(--hinata-orange);
+  font-weight: normal;
+  width: 40px;
+  color: var(--text-light);
+}
+
+.kana-cell {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  perspective: 1000px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px var(--shadow);
+  border-radius: 8px;
+}
+
+.kana-cell.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.card-front {
+  background-color: var(--hinata-orange);
+  color: var(--text-light);
+}
+
+.card-back {
+  background-color: var(--kageyama-blue);
+  color: var(--text-light);
+  transform: rotateY(180deg);
+}
+
+.kana-character {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.romaji {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.kana-controls, .row-selector {
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+.kana-filter, .row-filter {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 6px;
+  background-color: var(--tsukishima-yellow);
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: 500;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+button:hover {
+  background-color: var(--hinata-orange);
+  color: var(--text-light);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px var(--shadow);
+}
+
+button.active {
+  background-color: var(--hinata-orange);
+  color: var(--text-light);
+}
+
+.direction-toggle {
+  background-color: var(--kageyama-blue);
+  color: var(--text-light);
+  margin-left: 20px;
+}
+
+.direction-toggle:hover {
+  background-color: var(--hinata-orange);
+}
+
+.direction-toggle.active {
+  background-color: var(--hinata-orange);
+}
+
+.no-selection-message {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--text-dark);
+  font-size: 18px;
+  background-color: var(--hinata-light);
+  border-radius: 8px;
+  margin: 20px auto;
+  max-width: 800px;
+  border: 2px solid var(--hinata-orange);
+}
+
+.switch-icon {
+  margin-right: 5px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .kana-cell {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .kana-character {
+    font-size: 22px;
+  }
+  
+  .romaji {
+    font-size: 18px;
+  }
+}
+</style> 
